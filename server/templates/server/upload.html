@@ -1,14 +1,21 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Главная</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 </head>
 <body>
-<form method = "post", enctype="multipart/form-data">
-   {% csrf_token %}
-   {{ form.as_p }}
-   <button type="submit"> Submit</button>
-</form>
+    <div class="block">
+        <h1 class="block_title">Загрузите свой файл</h1>
+        <form method = "post", enctype="multipart/form-data" class="block_form">
+            {% csrf_token %}
+            {% for f in form %}
+                <div class="form_label">{{ f }}</div>
+            {% endfor %}
+            <button type="submit" class="form_button">Обработать</button>
+        </form>
+    </div>
 </body>
 </html>

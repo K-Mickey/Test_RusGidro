@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+{% load static %}
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Результат</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}"/>
 </head>
 <body>
-file
-<a href='{{ file }}'>Link</a>
-<a href='temp/Отчет.xlsx'>Link</a>
-<a href='Отчет.xlsx'>Link</a>
-<a href='../../../temp/Отчет.xlsx'>Link</a>
-
+<div class="block">
+        <h1 class="block_title">Результат обработки</h1>
+        <a href='{{ file }}' class="block_link">Ссылка</a>
+    </div>
 </body>
 </html>
