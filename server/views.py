@@ -7,8 +7,8 @@ def upload_file(request):
     if request.method == 'POST':
         form = UploadFile(request.POST, request.FILES)
         if form.is_valid():
-            handle_file(request.FILES['file'])
-            return render(request, 'server/result.html')
+            file = handle_file(request.FILES['file'])
+            return render(request, 'server/result.html', {'file': file})
     else:
         form = UploadFile()
 

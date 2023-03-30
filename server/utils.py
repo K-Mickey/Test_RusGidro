@@ -1,17 +1,20 @@
+import os
 
 import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 
-SOURCE_NAME = 'Пример исходных данных.xlsx'
+PATH = 'media/temp/'
 RESPONSE_NAME = 'Отчет.xlsx'
+FULL_PATH = PATH + RESPONSE_NAME
 
 
-def handle_file(file) -> None:
+def handle_file(file):
     """Организация обработки файла"""
+
     # создание таблицы
-    df = create_df()
+    df = create_df(file)
     # рассчет значений для столбца "Исчислено всего по формуле"
     df['Исчислено всего по формуле'] = df.apply(calculate_total, axis=1)
     # рассчет значений для столбца "Отклонения"
@@ -19,12 +22,12 @@ def handle_file(file) -> None:
     # сортировка таблицы
     df.sort_values(by='Отклонения', ascending=False, inplace=True)
     # отправка таблицы
-    response_table(df)
+    return response_table(df)
 
 
-def create_df() -> pd.DataFrame:
+def create_df(file) -> pd.DataFrame:
     """извлечение данных из исходного df"""
-    source_df = pd.read_excel(SOURCE_NAME)
+    source_df = pd.read_excel(file)
     df = pd.DataFrame()
 
     # поиск и заполнение данными из исходника
@@ -57,7 +60,7 @@ def calculate_total(row: pd.Series):
         return row['Налоговая база'] * 0.15
 
 
-def response_table(df: pd.DataFrame) -> None:
+def response_table(df: pd.DataFrame):
     """возврат результата обработки файла"""
     # создание нового Excel файла
     wb = Workbook()
@@ -75,5 +78,13 @@ def response_table(df: pd.DataFrame) -> None:
             else:
                 cell.fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
 
+    # добавление директории
+    if not os.path.isdir(PATH):
+        os.makedirs(PATH)
+    # очистка директории
+    if os.path.exists(FULL_PATH):
+        os.remove(FULL_PATH)
     # сохранение отчета в новом Excel файле
-    wb.save(RESPONSE_NAME)
+    wb.save(FULL_PATH)
+    return FULL_PATH
+
