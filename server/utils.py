@@ -1,13 +1,14 @@
 import os
 
 import pandas as pd
-from openpyxl import Workbook
+from openpyxl.reader.excel import load_workbook
 from openpyxl.styles import PatternFill
 from openpyxl.utils.dataframe import dataframe_to_rows
 
 PATH = 'media/temp/'
 RESPONSE_NAME = 'Отчет.xlsx'
 FULL_PATH = PATH + RESPONSE_NAME
+SAMPLE = 'media/Шапка отчета.xlsx'
 
 
 def handle_file(file):
@@ -19,6 +20,7 @@ def handle_file(file):
     df['Исчислено всего по формуле'] = df.apply(calculate_total, axis=1)
     # рассчет значений для столбца "Отклонения"
     df['Отклонения'] = df['Исчислено всего'] - df['Исчислено всего по формуле']
+    df.dropna(subset=['Филиал'], inplace=True)
     # сортировка таблицы
     df.sort_values(by='Отклонения', ascending=False, inplace=True)
     # отправка таблицы
@@ -63,11 +65,11 @@ def calculate_total(row: pd.Series):
 def response_table(df: pd.DataFrame):
     """возврат результата обработки файла"""
     # создание нового Excel файла
-    wb = Workbook()
+    wb = load_workbook(SAMPLE)
     ws = wb.active
 
     # добавление данных в Excel файл
-    for r in dataframe_to_rows(df, index=False, header=True):
+    for r in dataframe_to_rows(df, index=False, header=False):
         ws.append(r)
 
     # форматирование ячеек столбца "Отклонения"
@@ -84,7 +86,7 @@ def response_table(df: pd.DataFrame):
     # очистка директории
     if os.path.exists(FULL_PATH):
         os.remove(FULL_PATH)
+
     # сохранение отчета в новом Excel файле
     wb.save(FULL_PATH)
     return FULL_PATH
-
